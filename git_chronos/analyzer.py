@@ -3,12 +3,14 @@
 
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 
 from .git_parser import Commit
 
+TASK_PATTERN = re.compile(r"^\s*([A-Za-z]+-\d+|[a-zA-Z][\w-]*)\s*:")
 DEFAULT_TASK = "General"
 
 
@@ -59,6 +61,10 @@ class AnalysisResult:
 
 
 def _detect_task(group: list[Commit]) -> str:
+    for commit in group:
+        match = TASK_PATTERN.match(commit.subject)
+        if match:
+            return match.group(1)
     return DEFAULT_TASK
 
 
@@ -76,7 +82,9 @@ def analyze_commits(
     - a gap between consecutive commits larger than ``session_gap_hours``
       closes the current session (the gap itself is unpaid rest);
     - ``buffer_mins`` is added before the first commit of every session,
-      since code is written before it is committed.
+      since code is written before it is committed;
+    - a session is attributed to the first task pattern found in its
+      commit subjects (``TASK-123:``, ``feature:``, ...).
     """
     by_day: dict[date, list[Commit]] = defaultdict(list)
     for commit in sorted(commits, key=lambda c: c.timestamp):

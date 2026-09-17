@@ -14,7 +14,19 @@ from ..config import Config
 BAR_WIDTH = 24
 
 
-def _meta_table(config: Config, repo_label: str, period_label: str) -> Table:
+def safe_symbol(console: Console, text: str, fallback: str) -> str:
+    """Return ``text`` if the console encoding supports it, else ``fallback``."""
+    encoding = console.encoding or "utf-8"
+    try:
+        text.encode(encoding)
+        return text
+    except (UnicodeEncodeError, LookupError):
+        return fallback
+
+
+def _meta_table(
+    config: Config, repo_label: str, period_label: str, symbol: str
+) -> Table:
     grid = Table.grid(padding=(0, 2))
     grid.add_column(style="bold cyan", justify="right")
     grid.add_column(style="white")
@@ -23,11 +35,13 @@ def _meta_table(config: Config, repo_label: str, period_label: str) -> Table:
     grid.add_row("Company", config.company_name)
     grid.add_row("Repository", repo_label)
     grid.add_row("Period", period_label)
-    grid.add_row("Rate", f"{config.currency_symbol}{config.hourly_rate:.2f}/h")
+    grid.add_row("Rate", f"{symbol}{config.hourly_rate:.2f}/h")
     return grid
 
 
-def _days_table(result: AnalysisResult, symbol: str) -> Table:
+def _days_table(
+    result: AnalysisResult, symbol: str, full: str = "█", empty: str = "░"
+) -> Table:
     table = Table(box=None, pad_edge=False, show_edge=False)
     table.add_column("Date", style="bold")
     table.add_column("Sessions", justify="right")
@@ -39,7 +53,7 @@ def _days_table(result: AnalysisResult, symbol: str) -> Table:
     max_hours = max((d.hours for d in result.days), default=1) or 1
     for day in result.days:
         bar_len = round(day.hours / max_hours * BAR_WIDTH)
-        bar = Text("█" * bar_len + "░" * (BAR_WIDTH - bar_len), style="green")
+        bar = Text(full * bar_len + empty * (BAR_WIDTH - bar_len), style="green")
         table.add_row(
             day.day.isoformat(),
             str(len(day.sessions)),
@@ -69,13 +83,16 @@ def render_terminal(
     console: Console | None = None,
 ) -> None:
     console = console or Console()
-    symbol = config.currency_symbol
+    symbol = safe_symbol(console, config.currency_symbol, config.currency)
+    full = safe_symbol(console, "█", "#")
+    empty = safe_symbol(console, "░", "-")
+    times = safe_symbol(console, "×", "x")
 
-    parts: list = [_meta_table(config, repo_label, period_label), ""]
+    parts: list = [_meta_table(config, repo_label, period_label, symbol), ""]
 
     if result.days:
         parts.append(Text("Daily breakdown", style="bold underline"))
-        parts.append(_days_table(result, symbol))
+        parts.append(_days_table(result, symbol, full, empty))
         parts.append("")
 
     if result.task_hours and (
@@ -86,7 +103,7 @@ def render_terminal(
         parts.append("")
 
     total = Text(
-        f"Total due: {result.total_hours:.1f} h × "
+        f"Total due: {result.total_hours:.1f} h {times} "
         f"{symbol}{config.hourly_rate:.2f} = {symbol}{result.total_amount:,.2f}",
         style="bold green",
     )

@@ -30,7 +30,28 @@ DEFAULT_CONFIG: dict[str, Any] = {
     },
 }
 
-CURRENCY_SYMBOLS = {"USD": "$", "EUR": "€", "RUB": "₽"}
+CURRENCY_SYMBOLS = {
+    "USD": "$",
+    "EUR": "€",
+    "GBP": "£",
+    "CHF": "CHF ",
+    "CAD": "CA$",
+    "AUD": "A$",
+    "NZD": "NZ$",
+    "JPY": "¥",
+    "CNY": "¥",
+    "KRW": "₩",
+    "INR": "₹",
+    "BRL": "R$",
+    "PLN": "zł",
+    "CZK": "Kč",
+    "TRY": "₺",
+    "AED": "AED ",
+    "RUB": "₽",
+    "UAH": "₴",
+    "KZT": "₸",
+    "BYN": "Br",
+}
 
 _REQUIRED_KEYS = {
     "developer": ("name", "email"),

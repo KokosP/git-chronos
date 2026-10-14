@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import enum
+from dataclasses import replace
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Optional
@@ -16,7 +17,7 @@ from . import __version__, config as config_module
 from .analyzer import analyze_commits
 from .config import Config, ConfigError
 from .exporters.excel import export_excel
-from .exporters.terminal import render_terminal
+from .exporters.terminal import render_terminal, safe_symbol
 from .git_parser import RepositoryError, get_commits
 
 app = typer.Typer(
@@ -114,7 +115,9 @@ def status() -> None:
     table.add_row("Config file", str(cfg.path))
     table.add_row("Developer", f"{cfg.developer_name} <{cfg.developer_email}>")
     table.add_row(
-        "Rate", f"{cfg.currency_symbol}{cfg.hourly_rate:.2f}/h ({cfg.currency})"
+        "Rate",
+        f"{safe_symbol(console, cfg.currency_symbol, cfg.currency)}"
+        f"{cfg.hourly_rate:.2f}/h ({cfg.currency})",
     )
     table.add_row("Session gap", f"{cfg.session_gap_hours:g} h")
     table.add_row("Start buffer", f"{cfg.first_commit_buffer_mins} min")
@@ -140,9 +143,19 @@ def analyze(
     until: Optional[str] = typer.Option(
         None, "--until", help="End date YYYY-MM-DD (custom period, default: today)."
     ),
+    currency: Optional[str] = typer.Option(
+        None, "--currency", "-c", help="Override currency, e.g. USD, EUR, GBP."
+    ),
+    rate: Optional[float] = typer.Option(
+        None, "--rate", "-r", help="Override hourly rate from the config."
+    ),
 ) -> None:
     """Analyze a repository and report billable time."""
     cfg, created = _load_or_fail()
+    if currency:
+        cfg = replace(cfg, currency=currency.strip().upper())
+    if rate is not None:
+        cfg = replace(cfg, hourly_rate=rate)
     if created:
         console.print(
             f"[yellow]No config found — created default:[/] {cfg.path}\n"

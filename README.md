@@ -49,10 +49,16 @@ Python **3.10+** is required.
 pip install git-chronos
 ```
 
+Or straight from GitHub:
+
+```bash
+pip install git+https://github.com/KokosP/git-chronos
+```
+
 Or install from source:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/KokosP/git-chronos
 cd git-chronos
 pip install .
 ```

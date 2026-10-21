@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 
-from git import InvalidGitRepositoryError, NoSuchPathError, Repo
+from git import GitCommandError, InvalidGitRepositoryError, NoSuchPathError, Repo
 
 
 class RepositoryError(Exception):
@@ -21,16 +21,34 @@ class Commit:
     subject: str
 
 
+def _iter_refs(repo: Repo):
+    """Yield unique commits reachable from every ref (branches, tags,
+    remote-tracking refs). Stash commits are skipped: they are not work."""
+    seen: set[str] = set()
+    for ref in repo.refs:
+        if ref.name == "stash":
+            continue
+        try:
+            for item in repo.iter_commits(ref):
+                if item.hexsha not in seen:
+                    seen.add(item.hexsha)
+                    yield item
+        except (GitCommandError, ValueError):
+            continue
+
+
 def get_commits(
     repo_path: str | Path,
     email: str,
     since: date | None = None,
     until: date | None = None,
+    all_branches: bool = False,
 ) -> list[Commit]:
     """Return commits authored by ``email`` in chronological order.
 
     ``since`` / ``until`` are inclusive calendar-day bounds; ``None`` removes
-    the corresponding bound.
+    the corresponding bound. By default only the history of the current
+    branch (HEAD) is read; ``all_branches=True`` counts every ref.
     """
     try:
         repo = Repo(str(Path(repo_path).resolve()))
@@ -40,7 +58,8 @@ def get_commits(
     needle = email.strip().lower()
     commits: list[Commit] = []
     try:
-        for item in repo.iter_commits():
+        iterator = _iter_refs(repo) if all_branches else repo.iter_commits()
+        for item in iterator:
             author_email = (item.author.email or "").lower()
             if needle and author_email != needle:
                 continue

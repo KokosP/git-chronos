@@ -149,6 +149,9 @@ def analyze(
     rate: Optional[float] = typer.Option(
         None, "--rate", "-r", help="Override hourly rate from the config."
     ),
+    all_branches: bool = typer.Option(
+        False, "--all", help="Count commits across all branches, not only HEAD."
+    ),
 ) -> None:
     """Analyze a repository and report billable time."""
     cfg, created = _load_or_fail()
@@ -165,7 +168,9 @@ def analyze(
     since_d, until_d, period_label = _resolve_period(period, since, until)
 
     try:
-        commits = get_commits(path, cfg.developer_email, since_d, until_d)
+        commits = get_commits(
+            path, cfg.developer_email, since_d, until_d, all_branches=all_branches
+        )
     except RepositoryError as exc:
         console.print(f"[bold red]Repository error:[/] {exc}")
         raise typer.Exit(code=1) from exc

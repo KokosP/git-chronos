@@ -71,7 +71,7 @@ name = "Ivan Ivanov"
 email = "ivan@developer.dev"       # Filter: only count commits by this author
 
 [finance]
-currency = "USD"                   # Currency symbol (USD, EUR, RUB)
+currency = "USD"                   # ISO code: USD, EUR, GBP, RUB, ...
 hourly_rate = 25.0                 # Hourly rate (price per 1 hour)
 
 [algorithm]
@@ -99,6 +99,10 @@ The interface is built on [Typer](https://typer.tiangolo.com/).
 
 - `--period` — reporting period: `week`, `month`, or `custom`
 - `--export` — output format: `terminal`, `excel`, or `both`
+- `--since` / `--until` — date bounds `YYYY-MM-DD` (required for `--period custom`)
+- `--currency` — override the currency for this run (e.g. `USD`, `EUR`, `GBP`)
+- `--rate` — override the hourly rate for this run
+- `--all` — count commits across all branches and tags, not only the current branch (HEAD)
 
 ### Examples
 
@@ -107,6 +111,7 @@ git-chronos init
 git-chronos status
 git-chronos analyze .
 git-chronos analyze ~/projects/client-app --period month --export both
+git-chronos analyze . --currency EUR --rate 40
 ```
 
 ---

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="490" font-family="'Segoe UI', Arial, sans-serif">
+<rect width="880" height="490" fill="#FFFFFF"/>
+<text x="40" y="52" font-size="26" font-weight="bold" fill="#34495E">Freelance Inc.</text>
+<text x="40" y="80" font-size="14" font-weight="bold" fill="#34495E" letter-spacing="2">TIME REPORT / INVOICE</text>
+<text x="40" y="116" font-size="13" font-weight="bold" fill="#222">Developer:</text>
+<text x="130" y="116" font-size="13" fill="#444">Your Name <you@example.com></text>
+<text x="40" y="138" font-size="13" font-weight="bold" fill="#222">Client:</text>
+<text x="130" y="138" font-size="13" fill="#444">Best Customer LLC</text>
+<text x="40" y="160" font-size="13" font-weight="bold" fill="#222">Period:</text>
+<text x="130" y="160" font-size="13" fill="#444">Last 30 days</text>
+<text x="40" y="182" font-size="13" font-weight="bold" fill="#222">Generated:</text>
+<text x="130" y="182" font-size="13" fill="#444">2026-10-21 20:40</text>
+<text x="40" y="204" font-size="13" font-weight="bold" fill="#222">Rate:</text>
+<text x="130" y="204" font-size="13" fill="#444">$25.00/h</text>
+<rect x="40" y="240" width="800" height="30" fill="#34495E"/>
+<text x="50" y="260" font-size="13" font-weight="bold" fill="#FFF">Date</text>
+<text x="170" y="260" font-size="13" font-weight="bold" fill="#FFF">Sessions</text>
+<text x="270" y="260" font-size="13" font-weight="bold" fill="#FFF">Hours</text>
+<text x="360" y="260" font-size="13" font-weight="bold" fill="#FFF">Rate</text>
+<text x="470" y="260" font-size="13" font-weight="bold" fill="#FFF">Amount</text>
+<text x="580" y="260" font-size="13" font-weight="bold" fill="#FFF">Tasks</text>
+<line x1="40" y1="300" x2="840" y2="300" stroke="#D5DBDB"/>
+<text x="50" y="290" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">2026-10-15</text>
+<text x="170" y="290" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">2</text>
+<text x="270" y="290" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">1.7</text>
+<text x="360" y="290" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$25.00</text>
+<text x="470" y="290" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$41.67</text>
+<text x="580" y="290" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">PROJ-101, fix</text>
+<rect x="40" y="300" width="800" height="30" fill="#ECF0F1"/>
+<line x1="40" y1="330" x2="840" y2="330" stroke="#D5DBDB"/>
+<text x="50" y="320" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">2026-10-16</text>
+<text x="170" y="320" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">1</text>
+<text x="270" y="320" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">2.0</text>
+<text x="360" y="320" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$25.00</text>
+<text x="470" y="320" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$50.00</text>
+<text x="580" y="320" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">PROJ-102</text>
+<line x1="40" y1="360" x2="840" y2="360" stroke="#D5DBDB"/>
+<text x="50" y="350" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">2026-10-19</text>
+<text x="170" y="350" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">1</text>
+<text x="270" y="350" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">0.8</text>
+<text x="360" y="350" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$25.00</text>
+<text x="470" y="350" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$20.83</text>
+<text x="580" y="350" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">docs</text>
+<rect x="40" y="360" width="800" height="30" fill="#ECF0F1"/>
+<line x1="40" y1="390" x2="840" y2="390" stroke="#D5DBDB"/>
+<text x="50" y="380" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">2026-10-20</text>
+<text x="170" y="380" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">2</text>
+<text x="270" y="380" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">3.2</text>
+<text x="360" y="380" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$25.00</text>
+<text x="470" y="380" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$81.25</text>
+<text x="580" y="380" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">PROJ-101, feature</text>
+<line x1="40" y1="420" x2="840" y2="420" stroke="#D5DBDB"/>
+<text x="50" y="410" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">2026-10-21</text>
+<text x="170" y="410" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">1</text>
+<text x="270" y="410" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">0.5</text>
+<text x="360" y="410" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$25.00</text>
+<text x="470" y="410" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">$12.50</text>
+<text x="580" y="410" font-size="13" fill="#333" font-family="Consolas, 'Courier New', monospace">feature</text>
+<line x1="40" y1="420" x2="840" y2="420" stroke="#34495E" stroke-width="3"/>
+<line x1="40" y1="424" x2="840" y2="424" stroke="#34495E"/>
+<text x="50" y="442" font-size="13" font-weight="bold" fill="#34495E" font-family="Consolas, 'Courier New', monospace">TOTAL</text>
+<text x="170" y="442" font-size="13" font-weight="bold" fill="#34495E" font-family="Consolas, 'Courier New', monospace"></text>
+<text x="270" y="442" font-size="13" font-weight="bold" fill="#34495E" font-family="Consolas, 'Courier New', monospace">8.2</text>
+<text x="360" y="442" font-size="13" font-weight="bold" fill="#34495E" font-family="Consolas, 'Courier New', monospace"></text>
+<text x="470" y="442" font-size="13" font-weight="bold" fill="#34495E" font-family="Consolas, 'Courier New', monospace">$206.25</text>
+<text x="580" y="442" font-size="13" font-weight="bold" fill="#34495E" font-family="Consolas, 'Courier New', monospace"></text>
+</svg>

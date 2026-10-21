@@ -1,43 +1,34 @@
+<div align="center">
+
 # Git-Chronos
 
-**Git-Chronos** is a standalone command-line utility (CLI) written in Python that automatically tracks working time and calculates earnings based on the commit history of local Git repositories.
+**Turn your Git history into billable hours — and invoices.**
 
-The tool is designed for freelancers and contract developers. It runs **100% locally**, guarantees full data privacy, and requires no internet connection or third-party AI services.
+[![PyPI](https://img.shields.io/pypi/v/git-chronos)](https://pypi.org/project/git-chronos/)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
----
+A local-first CLI for freelancers and contract developers. No timers to forget,
+no cloud, no AI services — your `.git` folder already knows when you worked.
 
-## Features
-
-- **Automatic time tracking** — derives billable hours from your Git commit history; no manual timers.
-- **Earnings calculation** — multiplies tracked hours by your hourly rate and produces a total amount due.
-- **Session-aware algorithm** — groups commits into work sessions with configurable gap thresholds and start buffers.
-- **Task parsing** — attributes session time to tasks when commit messages follow a pattern like `TASK-123:` or `feature:`.
-- **Beautiful terminal reports** — a colored TUI dashboard built with [Rich](https://github.com/Textualize/rich).
-- **Corporate-grade Excel invoices** — styled `.xlsx` reports generated with `openpyxl`, including native Excel `SUM` formulas.
-- **Private by design** — everything runs locally; no data ever leaves your machine.
+</div>
 
 ---
 
-## Project Structure
+![Git-Chronos demo](docs/demo.gif)
 
-```text
-git-chronos/
-│
-├── git_chronos/               # Main source package
-│   ├── __init__.py
-│   ├── cli.py                 # Command-line interface (Typer)
-│   ├── config.py              # config.toml initialization and reading
-│   ├── git_parser.py          # Git history module (GitPython)
-│   ├── analyzer.py            # Time-calculation engine
-│   └── exporters/             # Report exporters
-│       ├── __init__.py
-│       ├── excel.py           # Designer Excel reports (openpyxl)
-│       └── terminal.py        # Colored TUI dashboard (Rich)
-│
-├── pyproject.toml             # Package dependencies and metadata
-├── README.md                  # Repository documentation
-└── LICENSE                    # MIT License
-```
+---
+
+## Why
+
+You write code first, commit second — Git-Chronos reads your commit history and
+reconstructs billable sessions automatically:
+
+- **Zero manual tracking** — hours are derived from real commits, not timers.
+- **Session-aware** — gaps longer than a threshold count as unpaid breaks; a warm-up buffer is added before each session's first commit.
+- **Task attribution** — `TASK-123:` or `feature:` prefixes map sessions to tasks.
+- **Two report styles** — a Rich terminal dashboard and a corporate Excel invoice with real `=SUM()` formulas.
+- **Private by design** — 100% offline; nothing leaves your machine.
 
 ---
 
@@ -55,7 +46,7 @@ Or straight from GitHub:
 pip install git+https://github.com/KokosP/git-chronos
 ```
 
-Or install from source:
+Or from source:
 
 ```bash
 git clone https://github.com/KokosP/git-chronos
@@ -65,11 +56,76 @@ pip install .
 
 ---
 
+## Quick start
+
+```bash
+git-chronos init        # creates ~/.git-chronos.toml
+git-chronos status      # validates config, shows your rate
+git-chronos analyze .   # analyzes the repo in the current directory
+```
+
+Set `developer.email` in the config to your `git config user.email` — only your
+commits are counted.
+
+---
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `git-chronos init` | Creates the default `~/.git-chronos.toml` config file (`--force` to overwrite) |
+| `git-chronos status` | Validates the config and prints current settings |
+| `git-chronos analyze [PATH]` | Analyzes the repository at `PATH` (default: `.`) |
+
+### `analyze` options
+
+| Flag | Description |
+|---|---|
+| `--period`, `-p` | `week`, `month` (default), or `custom` |
+| `--export`, `-e` | `terminal` (default), `excel`, or `both` |
+| `--since` / `--until` | Date bounds `YYYY-MM-DD` (required for `--period custom`) |
+| `--currency`, `-c` | Override currency for this run (`USD`, `EUR`, `GBP`, …) |
+| `--rate`, `-r` | Override the hourly rate for this run |
+| `--all` | Count commits across all branches and tags, not only HEAD |
+
+```bash
+git-chronos analyze ~/work/client-app --period month --export both
+git-chronos analyze . --period custom --since 2026-10-01 --until 2026-10-15
+git-chronos analyze . --all --currency EUR --rate 40
+```
+
+---
+
+## Terminal dashboard
+
+![Terminal report](docs/demo-terminal.svg)
+
+The [Rich](https://github.com/Textualize/rich) panel shows:
+
+- **Header** — developer, client, company, repository, period, rate.
+- **Daily breakdown** — sessions, hours, an activity bar, amount, and tasks per day.
+- **Per-task breakdown** — hours and money per detected task.
+- **Finance line** — `Total due: 8.2 h × $25.00 = $206.25`.
+
+On terminals with a limited legacy encoding the glyphs fall back to ASCII
+(`#`, `-`, currency codes) — the numbers stay the same.
+
+## Excel invoice
+
+`--export excel` writes a styled `.xlsx` next to your working directory:
+
+![Excel invoice](docs/demo-excel.svg)
+
+- Slate Gray (`#34495E`) header with white text, alternating row shading.
+- Formats: dates `YYYY-MM-DD`, hours `0.0`, money `"$"#,##0.00`.
+- **Real formulas**: per-day `=Hours*Rate` and `=SUM(...)` totals — the invoice
+  recalculates if you edit it.
+
+---
+
 ## Configuration
 
-On first run, or via the `git-chronos init` command, a `.git-chronos.toml` file is created in the user's home directory.
-
-### Config file structure
+`git-chronos init` writes `~/.git-chronos.toml`:
 
 ```toml
 [developer]
@@ -82,90 +138,75 @@ hourly_rate = 25.0                 # Hourly rate (price per 1 hour)
 
 [algorithm]
 session_gap_hours = 2.0            # Max. break between commits (in hours)
-first_commit_buffer_mins = 30      # "Warm-up" time before the first commit of the day
+first_commit_buffer_mins = 30      # "Warm-up" time before the first commit of a session
 
 [reporting]
 company_name = "Freelance Inc."
 client_name = "Best Customer LLC"
 ```
 
+Known symbols: `$`, `€`, `£`, `¥`, `₹`, `₽`, `₴`, `₸` and more — any other ISO
+code is used as-is (`SEK25.00`).
+
 ---
 
-## CLI Commands
+## How the time is counted
 
-The interface is built on [Typer](https://typer.tiangolo.com/).
-
-| Command | Description |
-|---|---|
-| `git-chronos init` | Creates the default `.git-chronos.toml` config file |
-| `git-chronos status` | Validates the config and prints the current rate |
-| `git-chronos analyze [PATH]` | Analyzes the repository at the given path (default: `.`) |
-
-### `analyze` options
-
-- `--period` — reporting period: `week`, `month`, or `custom`
-- `--export` — output format: `terminal`, `excel`, or `both`
-- `--since` / `--until` — date bounds `YYYY-MM-DD` (required for `--period custom`)
-- `--currency` — override the currency for this run (e.g. `USD`, `EUR`, `GBP`)
-- `--rate` — override the hourly rate for this run
-- `--all` — count commits across all branches and tags, not only the current branch (HEAD)
-
-### Examples
-
-```bash
-git-chronos init
-git-chronos status
-git-chronos analyze .
-git-chronos analyze ~/projects/client-app --period month --export both
-git-chronos analyze . --currency EUR --rate 40
+```mermaid
+flowchart LR
+    A[commits<br/>by your email] --> B[grouped<br/>by day]
+    B --> C{gap between<br/>commits}
+    C -->|&le; session_gap_hours| D[same session<br/>billable]
+    C -->|&gt; session_gap_hours| E[break<br/>unpaid]
+    D --> F[+ first_commit_buffer_mins<br/>per session]
+    E --> F
+    F --> G[task prefix?<br/>TASK-123: / feature:]
+    G --> H[report:<br/>hours &times; rate = amount]
 ```
 
----
-
-## Time-Calculation Algorithm
-
-Commits are extracted from the local `.git` folder via **GitPython** and filtered by `developer.email`.
-
-1. **Grouping** — all commits are sorted chronologically and grouped by day.
-2. **Session detection** — if the gap between commit A and commit B is less than `session_gap_hours` (e.g., 2 hours), the interval is treated as continuous work, and `Time(B) - Time(A)` is added to the day's timer.
-3. **Breaks** — if the gap exceeds `session_gap_hours`, the current session is closed. The idle interval is treated as rest and is not billable.
-4. **Start buffer** — `first_commit_buffer_mins` (e.g., 30 minutes) is added before the first commit of each new session (or the first commit of the day), since code is written before it is committed.
-5. **Task parsing** — if a commit message starts with a task pattern (e.g., `TASK-123:` or `feature:`), the session's time is attributed to that task.
+1. Commits are read via GitPython (HEAD, or every ref with `--all`) and filtered
+   by `developer.email`.
+2. Sorted chronologically, grouped by calendar day.
+3. Consecutive commits within `session_gap_hours` form one session; the gap
+   between sessions is rest and is not billed.
+4. `first_commit_buffer_mins` is added before each session's first commit —
+   code exists before it is committed.
+5. A session inherits the task from the first commit message matching
+   `PREFIX-123:` or `word:`; otherwise it is `General`.
 
 ---
 
-## Output Design
+## Project structure
 
-### Terminal dashboard (`exporters/terminal.py`)
+```text
+git-chronos/
+├── git_chronos/
+│   ├── __init__.py
+│   ├── cli.py                 # Typer commands: init / status / analyze
+│   ├── config.py              # ~/.git-chronos.toml loading & validation
+│   ├── git_parser.py          # Commit extraction via GitPython
+│   ├── analyzer.py            # Sessions, buffers, task detection
+│   └── exporters/
+│       ├── __init__.py
+│       ├── excel.py           # Styled .xlsx invoice (openpyxl)
+│       └── terminal.py        # Rich dashboard
+├── docs/                      # Demo assets for this README
+├── pyproject.toml
+├── README.md
+└── LICENSE
+```
 
-Using **Rich**, the utility renders a formatted report card:
-
-- **Header** — a gradient-framed panel with the utility name and metadata (Developer / Client).
-- **Finance block** — a brightly highlighted block (e.g., green for income):
-  `Total due: 80.5 h × $25.00 = $2,012.50`
-- **Activity charts** — pseudo-graphic bars via `Rich.progress` or `█` characters visualizing load by day or week.
-
-### Excel invoice (`exporters/excel.py`)
-
-The `.xlsx` file is generated via **openpyxl** and follows modern corporate design rules:
-
-- **Color palette** — no default styles. Slate Gray (`#34495E`) table headers with white text; alternating data rows with a light gray tint for readability.
-- **Formatting** — date columns use `YYYY-MM-DD`, hour columns use `0.0`, money columns use a strict financial format (e.g., `$#,##0.00`).
-- **Formulas** — totals in money and hours are computed with native Excel formulas (`=SUM(...)`), not hardcoded text.
-
----
-
-## Tech Stack
+## Tech stack
 
 | Library | Purpose |
 |---|---|
-| `typer` | Command-line interface (CLI) |
-| `gitpython` | Low-level reading of local Git repository history |
-| `toml` | Parsing and validating the config file |
-| `rich` | Terminal formatting: tables, colors, charts |
-| `openpyxl` | Generating and styling Excel reports |
+| `typer` | Command-line interface |
+| `gitpython` | Reading local Git history |
+| `toml` | Config parsing |
+| `rich` | Terminal dashboard |
+| `openpyxl` | Excel invoice generation |
 
-**Constraints:** Python 3.10+. No external APIs or AI models are used.
+No external APIs. No AI services. Python 3.10+.
 
 ---
 

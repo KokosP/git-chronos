@@ -12,4 +12,4 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install -e . pytest
-      - run: pytest -v; code=$?; [ "$code" -eq 0 ] || [ "$code" -eq 5 ]
+      - run: pytest -v || [ $? -eq 5 ]

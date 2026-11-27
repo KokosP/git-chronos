@@ -27,7 +27,7 @@ reconstructs billable sessions automatically:
 - **Zero manual tracking** — hours are derived from real commits, not timers.
 - **Session-aware** — gaps longer than a threshold count as unpaid breaks; a warm-up buffer is added before each session's first commit.
 - **Task attribution** — `TASK-123:` or `feature:` prefixes map sessions to tasks.
-- **Two report styles** — a Rich terminal dashboard and a corporate Excel invoice with real `=SUM()` formulas.
+- **Three report styles** — a Rich terminal dashboard, a corporate Excel invoice with real `=SUM()` formulas, and a plain CSV for spreadsheets and scripts.
 - **Private by design** — 100% offline; nothing leaves your machine.
 
 ---
@@ -82,7 +82,7 @@ commits are counted.
 | Flag | Description |
 |---|---|
 | `--period`, `-p` | `week`, `month` (default), or `custom` |
-| `--export`, `-e` | `terminal` (default), `excel`, or `both` |
+| `--export`, `-e` | `terminal` (default), `excel`, `csv`, or `both` (terminal + excel) |
 | `--since` / `--until` | Date bounds `YYYY-MM-DD` (required for `--period custom`) |
 | `--currency`, `-c` | Override currency for this run (`USD`, `EUR`, `GBP`, …) |
 | `--rate`, `-r` | Override the hourly rate for this run |
@@ -92,6 +92,7 @@ commits are counted.
 git-chronos analyze ~/work/client-app --period month --export both
 git-chronos analyze . --period custom --since 2026-10-01 --until 2026-10-15
 git-chronos analyze . --all --currency EUR --rate 40
+git-chronos analyze . --export csv
 ```
 
 ---
@@ -120,6 +121,23 @@ On terminals with a limited legacy encoding the glyphs fall back to ASCII
 - Formats: dates `YYYY-MM-DD`, hours `0.0`, money `"$"#,##0.00`.
 - **Real formulas**: per-day `=Hours*Rate` and `=SUM(...)` totals — the invoice
   recalculates if you edit it.
+
+## CSV report
+
+`--export csv` writes a plain `.csv` (`git-chronos-report-YYYYMMDD-HHMMSS.csv`)
+to your working directory, one row per day:
+
+```csv
+date,sessions,hours,rate,amount,tasks
+2026-10-21,2,4.08,25.00,102.00,General
+2026-10-23,2,1.62,25.00,40.50,General
+```
+
+- Columns: `date, sessions, hours, rate, amount, tasks`.
+- Raw numbers with no currency symbols, so the columns stay numeric. Dates are `YYYY-MM-DD`.
+- UTF-8 with a BOM, so Excel opens it correctly.
+- A CSV has no formatting: Excel may show `########` for dates until the column
+  is auto-fitted. Use `--export excel` for a styled invoice.
 
 ---
 
@@ -188,6 +206,7 @@ git-chronos/
 │   ├── analyzer.py            # Sessions, buffers, task detection
 │   └── exporters/
 │       ├── __init__.py
+│       ├── csv.py             # Plain .csv report (stdlib csv)
 │       ├── excel.py           # Styled .xlsx invoice (openpyxl)
 │       └── terminal.py        # Rich dashboard
 ├── docs/                      # Demo assets for this README

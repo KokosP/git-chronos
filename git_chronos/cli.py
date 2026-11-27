@@ -16,9 +16,11 @@ from rich.table import Table
 from . import __version__, config as config_module
 from .analyzer import analyze_commits
 from .config import Config, ConfigError
+from .exporters.csv import export_csv
 from .exporters.excel import export_excel
 from .exporters.terminal import render_terminal, safe_symbol
 from .git_parser import RepositoryError, get_commits
+
 
 app = typer.Typer(
     name="git-chronos",
@@ -38,6 +40,7 @@ class Period(str, enum.Enum):
 class Export(str, enum.Enum):
     terminal = "terminal"
     excel = "excel"
+    csv = "csv"
     both = "both"
 
 
@@ -198,3 +201,7 @@ def analyze(
     if export in (Export.excel, Export.both):
         out_path = export_excel(result, cfg, Path.cwd(), period_label)
         console.print(f"[green]Excel invoice saved:[/] {out_path}")
+
+    if export is Export.csv:
+        out_path = export_csv(result, cfg, Path.cwd(), period_label)
+        console.print(f"[green]CSV report saved:[/] {out_path}")
